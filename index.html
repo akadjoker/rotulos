@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Checklist Completo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .sub-options { margin-left: 20px; display: none; }
+    body { background-color: #2d3748 !important; color: #e2e8f0; }
+    .container { background-color: #4a5568; padding: 2rem; border-radius: 8px; }
+    .bg-white { background-color: #1a202c !important; color: #e2e8f0; }
+    .form-check-label { color: #e2e8f0; }
+    .form-control { background-color: #2d3748; border-color: #4a5568; color: #e2e8f0; }
+  </style>
+</head>
+<body class="p-4">
+<div class="container">
+  <h1 class="mb-4">Checklist</h1>
+  <div id="categories"></div>
+
+  <h4 class="mt-4">Review</h4>
+  <div class="mb-3">
+    <div class="form-check"><input class="form-check-input" type="radio" name="type" value="Real" id="real"><label for="real" class="form-check-label">Real Footage</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="type" value="Narr" id="narr"><label for="narr" class="form-check-label">Narrative</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="type" value="Fic" id="fic"><label for="fic" class="form-check-label">Ficcional</label></div>
+    <div class="form-check"><input class="form-check-input" type="radio" name="type" value="Educ" id="educ"><label for="educ" class="form-check-label">Educacional</label></div>
+  </div>
+
+  <h4 class="mt-4">Ages</h4>
+  <div class="mb-3">
+   <div class="form-check"><input class="form-check-input" type="checkbox" value="Adults (18+)" id="age1"><label for="age1" class="form-check-label">Adults (18+)</label></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" value="Late Teens (15–18)" id="age2"><label for="age2" class="form-check-label">Late Teens (15–18)</label></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" value="Early Teens (12–15)" id="age3"><label for="age3" class="form-check-label">Early Teens (12–15)</label></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" value="Pre-Teen (10–12)" id="age4"><label for="age4" class="form-check-label">Pre-Teen (10–12)</label></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" value="Young Children (5–10)" id="age5"><label for="age5" class="form-check-label">Young Children (5–10)</label></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" value="Early Childhood (2–5)" id="age6"><label for="age6" class="form-check-label">Early Childhood (2–5)</label></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" value="Babies (0–2)" id="age7"><label for="age7" class="form-check-label">Babies (0–2)</label></div>
+    </div>
+
+  <button class="btn btn-primary mt-3" onclick="gerarResumo()">Update</button>
+  <button class="btn btn-success mt-3 ms-2" onclick="copiarResumo()">Copy</button>
+
+  <div class="bg-white border rounded p-3 mt-4" id="resumo"></div>
+</div>
+
+<script>
+const categorias = [
+  "NR", "Death", "Injury/Illness", "Emotional Distress", "Major Property Damage", "Weapons",
+  "Military Conflict", "Terrorism", "Missing Persons", "Rights Issues", "Political Affiliation",
+  "Crime", "Alcohol", "Pharmaceuticals", "Drugs & Nicotine", "Sexual & Nudity",
+  "Suggestive Content", "Major Gore & Fluids", "Minor Gore & Fluids",
+  "Obscenity & Profanity", "Brand Safety Unsuitable"
+];
+const siglas = [
+  "NR", "Death", "II", "ED", "MPD", "WEAP", "MC", "TERR", "MP", "RI", "PA",
+  "CRIME", "ALC", "PHARMA", "D&N", "S&N", "SC", "MJG", "MNG", "O&P", "BSU"
+];
+
+const ages = [
+  "adults", "late-teen", "early-teen", "pre-ten", "young-chil", "early-child", "babies"
+];
+
+function renderCategorias() {
+  const container = document.getElementById("categories");
+  categorias.forEach((nome, i) => {
+    const sigla = siglas[i];
+    const id = `cat-${i}`;
+    const subId = `sub-${i}`;
+
+    container.innerHTML += `
+      <div class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" id="${id}" value="${sigla}" onchange="onCategoriaChange('${sigla}', '${id}', '${subId}')">
+        <label class="form-check-label" for="${id}">${nome}</label>
+      </div>
+      ${sigla !== "NR" ? `
+      <div class="sub-options" id="${subId}">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="${subId}-tc" onchange="gerarResumo()">
+          <label class="form-check-label" for="${subId}-tc">TC (Título/Thumbnail)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="${sigla}-freq" value="brief" id="${subId}-brief" onchange="gerarResumo()">
+          <label class="form-check-label" for="${subId}-brief">Brief</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="${sigla}-freq" value="throughout" id="${subId}-thro" onchange="gerarResumo()">
+          <label class="form-check-label" for="${subId}-thro">Throughout</label>
+        </div>
+      </div>
+      ` : ''}
+    `;
+  });
+}
+
+function onCategoriaChange(sigla, id, subId) {
+  const isChecked = document.getElementById(id).checked;
+  const el = document.getElementById(subId);
+  if (el) el.style.display = isChecked ? 'block' : 'none';
+
+  if (sigla === "NR" && isChecked) {
+    categorias.forEach((nome, j) => {
+      if (siglas[j] !== "NR") {
+        const cid = `cat-${j}`;
+        const sid = `sub-${j}`;
+        const box = document.getElementById(cid);
+        if (box) box.checked = false;
+        const sub = document.getElementById(sid);
+        if (sub) sub.style.display = 'none';
+      }
+    });
+  } else if (sigla !== "NR") {
+    const nrBox = document.getElementById("cat-0");
+    if (nrBox) nrBox.checked = false;
+    const nrSub = document.getElementById("sub-0");
+    if (nrSub) nrSub.style.display = 'none';
+  }
+
+  gerarResumo();
+}
+
+function copiarResumo() {
+  const resumoElement = document.getElementById("resumo");
+  const resumoTexto = resumoElement.innerText;
+  
+  navigator.clipboard.writeText(resumoTexto).then(() => {
+    // Feedback visual de que foi copiado
+    const botao = event.target;
+    const textoOriginal = botao.innerText;
+    botao.innerText = "Copiado!";
+    botao.classList.remove("btn-success");
+    botao.classList.add("btn-outline-success");
+    
+    setTimeout(() => {
+      botao.innerText = textoOriginal;
+      botao.classList.remove("btn-outline-success");
+      botao.classList.add("btn-success");
+    }, 1500);
+  }).catch(err => {
+    console.error('Erro ao copiar: ', err);
+    alert('Erro ao copiar o resumo');
+  });
+}
+
+function gerarResumo() {
+  let output = `<h4>Resumo</h4>`;
+
+  siglas.forEach((sigla, i) => {
+    const main = document.getElementById(`cat-${i}`);
+    if (main && main.checked) {
+      if (sigla === "NR") {
+        // Para NR, apenas mostrar a sigla sem detalhes
+        output += `${sigla}<br>`;
+      } else {
+        let detalhes = [];
+        
+        // TC yes/no
+        const tcChecked = document.getElementById(`sub-${i}-tc`)?.checked;
+        detalhes.push(tcChecked ? "TC yes" : "TC no");
+        
+        const freq = document.querySelector(`input[name='${sigla}-freq']:checked`);
+        if (freq) detalhes.push(freq.value);
+
+        output += `${sigla}${detalhes.length ? ", " + detalhes.join(", ") : ""}<br>`;
+      }
+    }
+  });
+
+  const tipo = document.querySelector('input[name="type"]:checked')?.value;
+  
+  // Usar array ages para as idades selecionadas
+  const idadesSelecionadas = [];
+  for (let i = 0; i < ages.length; i++) {
+    const ageCheckbox = document.getElementById(`age${i + 1}`);
+    if (ageCheckbox && ageCheckbox.checked) {
+      idadesSelecionadas.push(ages[i]);
+    }
+  }
+
+  if (tipo) {
+    output += `<strong></strong> ${tipo}<br>`;
+  }
+  if (idadesSelecionadas.length > 0) {
+    output += `<strong></strong> ${idadesSelecionadas.join(", ")}<br>`;
+  }
+
+  document.getElementById("resumo").innerHTML = output;
+}
+
+renderCategorias();
+</script>
+</body>
+</html>
