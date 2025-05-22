@@ -40,7 +40,9 @@
   <button class="btn btn-primary mt-3" onclick="gerarResumo()">Update</button>
   <button class="btn btn-success mt-3 ms-2" onclick="copiarResumo()">Copy</button>
 
-  <div class="bg-white border rounded p-3 mt-4" id="resumo"></div>
+  <!-- <div class="bg-white border rounded p-3 mt-4" id="resumo"></div> -->
+  <textarea class="form-control mt-4" id="resumo" rows="8" readonly></textarea>
+
 </div>
 
 <script>
@@ -183,7 +185,9 @@ function gerarResumo() {
     output += `<strong></strong> ${idadesSelecionadas.join(", ")}<br>`;
   }
 
-  document.getElementById("resumo").innerHTML = output;
+//   document.getElementById("resumo").innerHTML = output;
+  document.getElementById("resumo").value = output.replace(/<br>/g, "\\n").replace(/<[^>]+>/g, "");
+
 }
 
 renderCategorias();
