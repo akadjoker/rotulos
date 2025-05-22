@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Checklist Completo</title>
+  <title>Checklist</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .sub-options { margin-left: 20px; display: none; }
@@ -38,10 +38,10 @@
     </div>
 
   <button class="btn btn-primary mt-3" onclick="gerarResumo()">Update</button>
-  <button class="btn btn-success mt-3 ms-2" onclick="copiarResumo()">Copy</button>
+  <!-- <button class="btn btn-success mt-3 ms-2" onclick="copiarResumo()">Copy</button> -->
 
   <!-- <div class="bg-white border rounded p-3 mt-4" id="resumo"></div> -->
-  <textarea class="form-control mt-4" id="resumo" rows="8" readonly></textarea>
+  <textarea class="form-control mt-4" id="resumo" rows="8" ></textarea>
 
 </div>
 
@@ -151,7 +151,7 @@ function gerarResumo() {
     if (main && main.checked) {
       if (sigla === "NR") {
         // Para NR, apenas mostrar a sigla sem detalhes
-        output += `${sigla}<br>`;
+        output += `${sigla} `;
       } else {
         let detalhes = [];
         
@@ -162,7 +162,7 @@ function gerarResumo() {
         const freq = document.querySelector(`input[name='${sigla}-freq']:checked`);
         if (freq) detalhes.push(freq.value);
 
-        output += `${sigla}${detalhes.length ? ", " + detalhes.join(", ") : ""}<br>`;
+        output += `${sigla}${detalhes.length ? ", " + detalhes.join(", ") : ""} `;
       }
     }
   });
@@ -179,14 +179,14 @@ function gerarResumo() {
   }
 
   if (tipo) {
-    output += `<strong></strong> ${tipo}<br>`;
+    output += ` ${tipo} `;
   }
   if (idadesSelecionadas.length > 0) {
-    output += `<strong></strong> ${idadesSelecionadas.join(", ")}<br>`;
+    output += `${idadesSelecionadas.join(", ")} `;
   }
 
 //   document.getElementById("resumo").innerHTML = output;
-  document.getElementById("resumo").value = output.replace(/<br>/g, "\\n").replace(/<[^>]+>/g, "");
+  document.getElementById("resumo").value = output.replace(/<br>/g, " ").replace(/<[^>]+>/g, "");
 
 }
 
