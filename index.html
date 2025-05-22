@@ -144,51 +144,86 @@ function copiarResumo() {
 }
 
 function gerarResumo() {
-  let output = ``;
+  let linhas = [];
 
   siglas.forEach((sigla, i) => {
     const main = document.getElementById(`cat-${i}`);
     if (main && main.checked) {
       if (sigla === "NR") {
-        // Para NR, apenas mostrar a sigla sem detalhes
-        output += `${sigla} `;
+        linhas.push(`${sigla}`);
       } else {
         let detalhes = [];
-        
-        // TC yes/no
+
         const tcChecked = document.getElementById(`sub-${i}-tc`)?.checked;
         detalhes.push(tcChecked ? "TC yes" : "TC no");
-        
+
         const freq = document.querySelector(`input[name='${sigla}-freq']:checked`);
         if (freq) detalhes.push(freq.value);
 
-        output += `${sigla}${detalhes.length ? ", " + detalhes.join(", ") : ""} `;
+        linhas.push(`${sigla}, ${detalhes.join(", ")}`);
       }
     }
   });
 
   const tipo = document.querySelector('input[name="type"]:checked')?.value;
-  
-  // Usar array ages para as idades selecionadas
+  if (tipo) linhas.push(tipo);
+
   const idadesSelecionadas = [];
   for (let i = 0; i < ages.length; i++) {
     const ageCheckbox = document.getElementById(`age${i + 1}`);
-    if (ageCheckbox && ageCheckbox.checked) {
-      idadesSelecionadas.push(ages[i]);
-    }
+    if (ageCheckbox?.checked) idadesSelecionadas.push(ages[i]);
   }
+  if (idadesSelecionadas.length > 0) linhas.push(idadesSelecionadas.join(", "));
 
-  if (tipo) {
-    output += ` ${tipo} `;
-  }
-  if (idadesSelecionadas.length > 0) {
-    output += `${idadesSelecionadas.join(", ")} `;
-  }
-
-//   document.getElementById("resumo").innerHTML = output;
-  document.getElementById("resumo").value = output.replace(/<br>/g, " ").replace(/<[^>]+>/g, "");
-
+  document.getElementById("resumo").value = linhas.join("\n");
 }
+
+// function gerarResumo() {
+//   let output = ``;
+
+//   siglas.forEach((sigla, i) => {
+//     const main = document.getElementById(`cat-${i}`);
+//     if (main && main.checked) {
+//       if (sigla === "NR") {
+//         // Para NR, apenas mostrar a sigla sem detalhes
+//         output += `${sigla} `;
+//       } else {
+//         let detalhes = [];
+        
+//         // TC yes/no
+//         const tcChecked = document.getElementById(`sub-${i}-tc`)?.checked;
+//         detalhes.push(tcChecked ? "TC yes" : "TC no");
+        
+//         const freq = document.querySelector(`input[name='${sigla}-freq']:checked`);
+//         if (freq) detalhes.push(freq.value);
+
+//         output += `${sigla}${detalhes.length ? ", " + detalhes.join(", ") : ""} `;
+//       }
+//     }
+//   });
+
+//   const tipo = document.querySelector('input[name="type"]:checked')?.value;
+  
+//   // Usar array ages para as idades selecionadas
+//   const idadesSelecionadas = [];
+//   for (let i = 0; i < ages.length; i++) {
+//     const ageCheckbox = document.getElementById(`age${i + 1}`);
+//     if (ageCheckbox && ageCheckbox.checked) {
+//       idadesSelecionadas.push(ages[i]);
+//     }
+//   }
+
+//   if (tipo) {
+//     output += ` ${tipo} `;
+//   }
+//   if (idadesSelecionadas.length > 0) {
+//     output += `${idadesSelecionadas.join(", ")} `;
+//   }
+
+// //   document.getElementById("resumo").innerHTML = output;
+//   document.getElementById("resumo").value = output.replace(/<br>/g, " ").replace(/<[^>]+>/g, "");
+
+// }
 
 renderCategorias();
 </script>
